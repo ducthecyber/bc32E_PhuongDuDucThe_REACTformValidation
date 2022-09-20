@@ -18,22 +18,37 @@ class FormDangKy extends Component {
         disabled: false,
 
     }
+    handleBlur = (event) =>{
+        const {name,title,validity} =  event.target
+        const {valueMissing,patternMismatch} = validity
+        console.log(validity)
+        let mess = ''
+        if(valueMissing){
+            mess = `${title} must be filled out !`
+        }
 
+        this.setState({
+            error:{
+                ...this.state.error,
+                [name]:mess,
+            }
+        })
+    }
     handleChange = (event) => {
         let tagInput = event.target
-        let { name, value } = tagInput
+        let { name, value,title } = tagInput
         let errorMessage = '';
 
         //Kiểm tra rỗng
         if (value.trim() === '') {
-            errorMessage = name + ' must be filled out !'
+            errorMessage = title + ' must be filled out !'
         }
 
         //kiểm tra mã SV
         if (event.target.name === 'maSV') {
             let regexNumber = /^[0-9]+$/;
             if (!regexNumber.test(value)) {
-                errorMessage = name + ' must be numbers !'
+                errorMessage = title + ' must be numbers !'
             }
         }
 
@@ -41,7 +56,7 @@ class FormDangKy extends Component {
         if (event.target.name === 'hoTen') {
             let regexLetter = /^[A-Z a-z]+$/;
             if (!regexLetter.test(value)) {
-                errorMessage = name + ' must be letters !'
+                errorMessage = title + ' must be letters !'
             }
         }
 
@@ -49,14 +64,14 @@ class FormDangKy extends Component {
         if (event.target.type === 'email') {
             let regexEmail = /(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/;
             if (!regexEmail.test(value)) {
-                errorMessage = name + ' should be example@mail.com !';
+                errorMessage = title + ' should be example@mail.com !';
             }
         }
 
         if (event.target.type === 'number') {
             let regexPhoneNumber = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
             if (!regexPhoneNumber.test(value)) {
-                errorMessage = name + ' starts with 03, 05, 07, 09 or 84! and have 10 numbers'
+                errorMessage = title + ' starts with 03, 05, 07, 09 or 84 and have 10 numbers!'
             }
         }
 
@@ -83,23 +98,23 @@ class FormDangKy extends Component {
                 <div className="grid grid-cols-2 gap-5 mt-4">
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Mã SV</p>
-                        <input value={sv.maSV} type="text" name='maSV' id='studentNo' placeholder='Mã Sinh Viên'
-                            className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} />
+                        <input required title='Student ID' value={sv.maSV} type="text" name='maSV' id='studentNo' placeholder='Mã Sinh Viên'
+                            className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.maSV}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Họ Tên</p>
-                        <input value={sv.hoTen} type='text' name='hoTen' id='studentName' placeholder='Họ tên Sinh Viên' className='capitalize border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} />
+                        <input required title='Fullname' value={sv.hoTen} type='text' name='hoTen' id='studentName' placeholder='Họ tên Sinh Viên' className='capitalize border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.hoTen}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Số Điện Thoại</p>
-                        <input value={sv.phoneNumber} type="number" name='phoneNumber' id='studentPhone' placeholder='Số điện thoại' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} />
+                        <input required title='Phone number' value={sv.phoneNumber} type="number" name='phoneNumber' id='studentPhone' placeholder='Số điện thoại' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.phoneNumber}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Email</p>
-                        <input value={sv.email} type="email" name='email' id='studentEmail' placeholder='emailSinhVien@gmail.com' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} />
+                        <input required title='Email' value={sv.email} type="email" name='email' id='studentEmail' placeholder='emailSinhVien@gmail.com' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.email}</p>
                     </div>
                 </div>
