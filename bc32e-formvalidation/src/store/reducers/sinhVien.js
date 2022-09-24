@@ -19,8 +19,12 @@ const stateDefault = {
             email: 'samsung@gmail.com',
         }
     ],
-    sinhVienCanTim: {},
-    tableSearch:[],
+    sinhVienCanTim: {
+        maSV: '',
+        hoTen: '',
+        phoneNumber: '',
+        email: '',
+    },
 }
 
 export const infoSinhVien = (state = stateDefault, action) => {
@@ -42,16 +46,18 @@ export const infoSinhVien = (state = stateDefault, action) => {
             }
             if (valid) {
                 const mangSVUpdate = [...state.mangSinhVien, action.payload.value];
-                state.mangSinhVien = mangSVUpdate
-                return { ...state }
+                return { ...state,mangSinhVien:mangSVUpdate }
             }
         };
         case 'SEARCH_STUDENT': {
-            console.log(action.payload.name)
-            const originList = {...state}
-            const arrayStudent = originList.mangSinhVien.filter(item => item.hoTen === action.payload.name)
-            console.log(originList)
-            return {...state,mangSinhVien:arrayStudent}
+            console.log(action.payload)
+            console.log(state.mangSinhVien)
+            let memory = Object.assign({},state)
+            const filteredSV = memory.mangSinhVien.filter(item=>{
+                return Object.keys(item).some(key=>item[key].toLowerCase().includes(action.payload));
+            })
+            
+            return { ...state,filteredSV}
         }
 
         default: return { ...state }
