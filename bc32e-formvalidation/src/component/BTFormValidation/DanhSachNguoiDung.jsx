@@ -8,8 +8,7 @@ class DanhSachNguoiDung extends Component {
     }
 
     render() {
-        const { sinhVien, info} = this.props
-        console.log(info.filteredSV)
+        const { sinhVien, info,selectedUser} = this.props
         return (
             <div>
                 <div className="mx-auto lg:py-4 dark:text-gray-100 mt-4">
@@ -31,7 +30,7 @@ class DanhSachNguoiDung extends Component {
                                     </svg>
                                 </button>
                             </span>
-                            <input onChange={(event) => this.searchSV(event)} type="search" name="Search" placeholder="Search..." className="flex w-full py-2 pl-10  border-2 border-pink-900 text-sm rounded-md sm:w-1/2 focus:outline-none dark:bg-gray-800 dark:text-gray-100 focus:dark:bg-gray-900" />
+                            <input onChange={(event) => this.searchSV(event)} type="search" name="Search" placeholder="Type anything related ...." className="flex w-full py-2 pl-10  border-2 border-pink-900 text-sm rounded-md sm:w-1/2 focus:outline-none dark:bg-gray-800 dark:text-gray-100 focus:dark:bg-gray-900" />
                         </div>
                     </div>
                     <div className="overflow-x-auto">
@@ -49,7 +48,7 @@ class DanhSachNguoiDung extends Component {
                             <tbody>
                                 {(!info.filteredSV ? sinhVien : info.filteredSV).map((item, index) => {
                                     return (
-                                        <tr key={index} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
+                                        <tr key={item.id} className="border-b border-opacity-20 dark:border-gray-700 dark:bg-gray-900">
                                             <td className="p-3">
                                                 <p>{item.maSV}</p>
                                             </td>
@@ -63,10 +62,16 @@ class DanhSachNguoiDung extends Component {
                                                 <p>{item.email}</p>
                                             </td>
                                             <td className="p-3 text-center">
-                                                <button className='bg-yellow-300 text-md py-2 px-3 hover:bg-yellow-500 hover:text-white rounded-md w-full'>Edit</button>
+                                                <button className='bg-yellow-300 text-md py-2 px-3 hover:bg-yellow-500 hover:text-white rounded-md w-full' onClick={()=>this.props.dispatch({
+                                                    type:'EDIT_USER',
+                                                    payload:item.id,
+                                                })}>Edit</button>
                                             </td>
                                             <td className="p-3 text-center">
-                                                <button className='bg-sky-500 py-2 px-3 text-md hover:bg-sky-700 hover:text-white rounded-md w-2/3'>Update</button>
+                                                <button className='bg-sky-500 py-2 px-3 text-md hover:bg-sky-700 hover:text-white rounded-md w-2/3' onClick={()=>this.props.dispatch({
+                                                    type:'DELETE_USER',
+                                                    payload:item.id,
+                                                })}>Delete</button>
                                             </td>
                                         </tr>
                                     )

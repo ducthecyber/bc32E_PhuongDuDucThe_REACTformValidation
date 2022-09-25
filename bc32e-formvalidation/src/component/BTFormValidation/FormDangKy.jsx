@@ -18,10 +18,19 @@ class FormDangKy extends Component {
         disabled: false,
 
     }
+    //chuyển props thành state nội bộ
+    static getDerivedStateFromProps = (nextProps, currentState)=>{
+        console.log(nextProps,currentState)
+        if(nextProps.selectedUser && nextProps.selectedUser.id !== currentState.value.id){
+            currentState.value = nextProps.selectedUser
+        }
+        return currentState
+    }
+
     handleBlur = (event) =>{
         const {name,title,validity} =  event.target
         const {valueMissing,patternMismatch} = validity
-        console.log(validity)
+        // console.log(validity)
         let mess = ''
         if(valueMissing){
             mess = `${title} must be filled out !`
@@ -84,42 +93,59 @@ class FormDangKy extends Component {
         })
     }
 
+    handleSubmit = (event) =>{
+        event.preventDefault()
+        this.props.addSinhVien(this.state)
+        this.setState({
+            value:{
+                maSV: '',
+                hoTen: '',
+                phoneNumber: '',
+                email: '',
+            }
+        })
+    }
+
+    upDateSinhVien = (event)=>{
+        this.props.upDateSinhVien(this.state.value)
+    }
+
     render() {
         const sv = this.state.value;
         const { error } = this.state
-        return (
-            <form onSubmit={(event) => {
-                //ngăn browser reload 
-                event.preventDefault()
-                this.props.addSinhVien(this.state)
+        // const {selectedUser} =this.props
+        // console.log(selectedUser)
+        const {maSV,hoTen,phoneNumber,email} = this.state.value
 
-            }}>
+        return (
+            <form onSubmit={this.handleSubmit}>
                 <div className='text-2xl bg-gray-900 text-white p-3 text-left'>Thông Tin Sinh Viên</div>
                 <div className="grid grid-cols-2 gap-5 mt-4">
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Mã SV</p>
-                        <input required title='Student ID' value={sv.maSV} type="text" name='maSV' id='studentNo' placeholder='Mã Sinh Viên'
+                        <input required title='Student ID' value={maSV} type="text" name='maSV' id='studentNo' placeholder='Mã Sinh Viên'
                             className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.maSV}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Họ Tên</p>
-                        <input required title='Fullname' value={sv.hoTen} type='text' name='hoTen' id='studentName' placeholder='Họ tên Sinh Viên' className='capitalize border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
+                        <input required title='Fullname' value={hoTen} type='text' name='hoTen' id='studentName' placeholder='Họ tên Sinh Viên' className='capitalize border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.hoTen}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Số Điện Thoại</p>
-                        <input required title='Phone number' value={sv.phoneNumber} type="number" name='phoneNumber' id='studentPhone' placeholder='Số điện thoại' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
+                        <input required title='Phone number' value={phoneNumber} type="number" name='phoneNumber' id='studentPhone' placeholder='Số điện thoại' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur ={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.phoneNumber}</p>
                     </div>
                     <div className='mt-2'>
                         <p className='text-left mb-2'>Email</p>
-                        <input required title='Email' value={sv.email} type="email" name='email' id='studentEmail' placeholder='emailSinhVien@gmail.com' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur={this.handleBlur}/>
+                        <input required title='Email' value={email} type="email" name='email' id='studentEmail' placeholder='emailSinhVien@gmail.com' className='border-2 border-zinc-300 rounded-sm p-3 w-full' onChange={this.handleChange} onBlur={this.handleBlur}/>
                         <p className='text-red-700 text-left italic'>{error.email}</p>
                     </div>
                 </div>
                 <div className='text-left'>
                     <button disabled={this.state.disabled} type='submit' className='bg-green-700 hover:bg-green-500 p-3 mt-4 text-white rounded-md ml-0'>Thêm Sinh Viên</button>
+                    <button disabled={this.state.disabled} type='button' className='bg-rose-800 hover:bg-rose-500 p-3 mt-4 text-white rounded-md ml-2' onClick={this.upDateSinhVien} >Cập nhật</button>
             </div>
             </form >
         )
@@ -133,8 +159,21 @@ const mapDispatchToProps = (dispatch) => {
                 type: 'ADD_SINH_VIEN',
                 payload: sinhVien,
             })
+        },
+        upDateSinhVien:(student)=>{
+            dispatch({
+                type:'UPDATE_USER',
+                payload:student,
+            })
         }
+ 
     }
 }
 
-export default connect(null, mapDispatchToProps)(FormDangKy)
+const mapStateToProps = (state) =>{
+    return{
+        ...state.infoSinhVien
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormDangKy)
